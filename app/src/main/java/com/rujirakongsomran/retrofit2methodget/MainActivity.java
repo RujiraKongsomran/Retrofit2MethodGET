@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.rujirakongsomran.retrofit2methodget.Model.Users;
 
 import retrofit2.Call;
@@ -45,6 +46,11 @@ public class MainActivity extends AppCompatActivity {
 
                 Users users = response.body();
 
+                Gson gson = new Gson();
+                String json = gson.toJson(users);
+                String jsonFormat = formatString(json);
+                tvResult.setText(jsonFormat);
+
             }
 
             @Override
@@ -53,5 +59,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public static String formatString(String text){
+
+        StringBuilder json = new StringBuilder();
+        String indentString = "";
+
+        for (int i = 0; i < text.length(); i++) {
+            char letter = text.charAt(i);
+            switch (letter) {
+                case '{':
+                case '[':
+                    json.append("\n" + indentString + letter + "\n");
+                    indentString = indentString + "\t";
+                    json.append(indentString);
+                    break;
+                case '}':
+                case ']':
+                    indentString = indentString.replaceFirst("\t", "");
+                    json.append("\n" + indentString + letter);
+                    break;
+                case ',':
+                    json.append(letter + "\n" + indentString);
+                    break;
+
+                default:
+                    json.append(letter);
+                    break;
+            }
+        }
+
+        return json.toString();
     }
 }
